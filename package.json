@@ -1,0 +1,31 @@
+{
+  "name": "sky-plastic-web",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "admin:set-credentials": "node scripts/set-admin-credentials.mjs"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.8.2",
+    "jose": "^6.2.18",
+    "mongodb": "^7.9.1",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.187.0",
+    "typescript": "^5.9.3"
+  }
+}
