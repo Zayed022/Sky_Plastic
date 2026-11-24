@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, ensureIndexes } from "@/lib/db";
 import { getRequestAdmin, sameOrigin } from "@/lib/auth";
 import { parseProduct } from "@/lib/validation";
-import { ObjectId } from "mongodb";
 import { ensureDemoProducts } from "@/lib/catalogue";
 
 export const runtime = "nodejs";

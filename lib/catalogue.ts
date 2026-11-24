@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, type Document } from "mongodb";
 import { getDb, ensureIndexes } from "@/lib/db";
 import type { Product, SiteSettings } from "@/lib/types";
 
@@ -114,7 +114,8 @@ export async function ensureDemoProducts(): Promise<void> {
   const db = await getDb();
   await ensureIndexes(db);
   const products = db.collection("products");
-  const seedClaims = db.collection("system");
+  // The system collection uses string IDs for one-time application claims.
+  const seedClaims = db.collection<Document & { _id: string; createdAt?: Date; email?: string }>("system");
   // Claim the one-time seed with a unique document so parallel cold starts cannot
   // duplicate the starter records, and deleting products later does not recreate them.
   try {
@@ -156,6 +157,6 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function getSiteSettings(): Promise<SiteSettings> {
   if (!process.env.MONGODB_URI) return DEFAULT_SETTINGS;
   const db = await getDb();
-  const doc = await db.collection("siteSettings").findOne({ _id: "main" });
+  const doc = await db.collection<SiteSettings & Document & { _id: string; updatedAt?: Date }>("siteSettings").findOne({ _id: "main" });
   return { ...DEFAULT_SETTINGS, ...(doc ?? {}) } as SiteSettings;
 }

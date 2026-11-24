@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Document } from "mongodb";
 import { getDb, ensureIndexes } from "@/lib/db";
 import { hashPassword, hasValidSetupToken, sameOrigin } from "@/lib/auth";
 
@@ -19,7 +20,8 @@ export async function POST(request: Request) {
     const db = await getDb();
     await ensureIndexes(db);
     const admins = db.collection("admins");
-    const setup = db.collection("system");
+    // The system collection uses application-defined string IDs rather than MongoDB ObjectIds.
+    const setup = db.collection<Document & { _id: string; email?: string; createdAt?: Date }>("system");
     // Atomic one-time claim prevents concurrent requests from creating multiple admins.
     try {
       await setup.insertOne({ _id: "primary-admin-bootstrap", email, createdAt: new Date() });

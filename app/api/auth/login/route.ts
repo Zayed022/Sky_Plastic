@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import type { Document } from "mongodb";
 import { NextResponse } from "next/server";
 import { getDb, ensureIndexes } from "@/lib/db";
 import { createAdminToken, setAdminCookie, verifyPassword, sameOrigin } from "@/lib/auth";
@@ -20,7 +21,8 @@ export async function POST(request: Request) {
     await ensureIndexes(db);
     const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const key = createHmac("sha256", process.env.AUTH_SECRET).update(`${email}:${ip}`).digest("hex");
-    const attempts = db.collection("loginAttempts");
+    // Login-attempt documents use an HMAC string as their deterministic _id.
+    const attempts = db.collection<Document & { _id: string; count?: number; updatedAt?: Date }>("loginAttempts");
     const record = await attempts.findOne({ _id: key });
     const now = new Date();
     const windowExpired = !record || now.getTime() - new Date(record.updatedAt as Date).getTime() > 15 * 60 * 1000;
